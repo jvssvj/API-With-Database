@@ -1,0 +1,18 @@
+{
+  "name": "ex2",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "db:sync": "node ./src/database/syncDatabase.js",
+    "dev": "node --watch src/server.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "express": "^5.1.0",
+    "joi": "^17.13.3",
+    "pg": "^8.16.3"
+  }
+}
