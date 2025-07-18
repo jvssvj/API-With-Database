@@ -1,150 +1,231 @@
 [Read in English](./README.md)
 
-# API-Com-Banco-de-Dados
+# API-With-Database
 
-Uma API RESTful para gerenciamento de clientes, produtos e pedidos, construída com Node.js, Express e PostgreSQL. O projeto segue uma arquitetura modular com separação clara entre rotas, controllers, models, middlewares e lógica de banco de dados.
+Uma API RESTful para gerenciamento de clientes, produtos e pedidos, desenvolvida com Node.js, Express e PostgreSQL. O projeto segue uma arquitetura modular com uma separação clara entre rotas, controladores, modelos, middleware e lógica de banco de dados.
 
 ## Funcionalidades
 
-- CRUD de clientes e produtos
+- CRUD de Cliente e Produto
 - Criação de pedidos com múltiplos produtos
 - Cálculo automático do total do pedido
-- Atualização de estoque ao finalizar pedidos
+- Atualização de estoque após a conclusão do pedido
 - Validação de dados e tratamento de erros
-- Transações seguras com rollback em caso de falha
+- Transações seguras com reversão em caso de falha
 
 ## Tecnologias utilizadas
 
 - Node.js
 - Express
 - PostgreSQL
-- node-postgres (pg)
+- node-postgres
 - Postman
-- Joi (validações)
+- Joi (Validations)
 
 ## Estrutura do projeto
 
 ```
-API-COM-BANCO-DE-DADOS/
+API-WITH-DATABASE/
 ├── node_modules/
 ├── src/
 │   ├── controllers/
+│   │   ├── customersController.js
+│   │   ├── ordersController.js
+│   │   └── productController.js
 │   ├── database/
+│   │   ├── index.js
+│   │   └── syncDatabase.js
 │   ├── errors/
+│   │   ├── ConflictError.js
+│   │   ├── NotFoundError.js
+│   │   └── ValidationError.js
 │   ├── middlewares/
+│   │   └── errorHandler.js
 │   ├── models/
+│   │   ├── Custumers.js
+│   │   ├── Order.js
+│   │   └── Product.js
 │   ├── routes/
+│   │   ├── customersRoutes.js
+│   │   ├── orderRoutes.js
+│   │   └── productRoutes.js
 │   └── server.js
 ├── package.json
 ├── package-lock.json
 └── README.md
 ```
-
 ## Executando localmente
 
-Clone o projeto:
+
+Clonar o projeto
 
 ```bash
-git clone https://link-para-o-projeto
+  git clone https://link-para-o-projeto
 ```
 
-Acesse o diretório do projeto:
+Entre no diretório do projeto
 
 ```bash
-cd API-With-Database
+  cd API-With-Database
 ```
 
-Configure a conexão PostgreSQL em `src/database/index.js`:
+Conectando ao PostgreSQL `src/database/index.js`
 
-```js
+```
+//Substitua o valor connectionString pela sua connectionString do PostgreSQL:
+
 const pool = new Pool({
-  connectionString: "postgres://usuario:senha@localhost:5432/nome_do_banco",
+  connectionString: "postgres://user:password@localhost:5432/database_name",
   max: 2
-});
+})
 ```
 
-Instale as dependências:
+Instalar dependências
 
-```bash
-npm install
+```
+  npm install
 ```
 
-Sincronize as tabelas com o banco:
+Após conectar ao banco de dados, sincronize as tabelas
 
-```bash
+```
 npm run db:sync
 ```
 
-Inicie o servidor:
+Inicie o servidor
 
-```bash
-npm run dev
 ```
+  npm run dev
+```
+
 
 ## Endpoints
 
+Lista os endpoints da API para gerenciamento de clientes, produtos e pedidos.
+
 ### Clientes (`/customers`)
 
-| Método | Rota              | Descrição                 |
+| Método | Rotas             | Descrição               |
 |--------|-------------------|---------------------------|
-| GET    | `/customers`      | Lista todos os clientes   |
-| GET    | `/customers/:id`  | Retorna um cliente pelo ID|
-| POST   | `/customers`      | Cria um novo cliente      |
-| PUT    | `/customers/:id`  | Atualiza um cliente       |
-| DELETE | `/customers/:id`  | Remove um cliente         |
+| GET    | `/customers`      | Listar todos os clientes         |
+| GET    | `/customers/:id`  | Obter um cliente por ID       |
+| POST   | `/customers`      | Criar um cliente     |
+| PUT    | `/customers/:id`  | Atualizar um cliente |
+| DELETE | `/customers/:id`  | Remover um cliente          |
 
 ### Produtos (`/products`)
 
-| Método | Rota              | Descrição                 |
-|--------|-------------------|---------------------------|
-| GET    | `/products`       | Lista todos os produtos   |
-| GET    | `/products/:id`   | Retorna um produto pelo ID|
-| POST   | `/products`       | Cria um novo produto      |
-| PUT    | `/products/:id`   | Atualiza um produto       |
-| DELETE | `/products/:id`   | Remove um produto         |
+| Método | Rotas           | Descrição              |
+|--------|-----------------|--------------------------|
+| GET    | `/products`     | Listar todos os produtos        |
+| GET    | `/products/:id` | Obter um produto por ID      |
+| POST   | `/products`     | Criar um novo produto     |
+| PUT    | `/products/:id` | Atualizar um produto |
+| DELETE | `/products/:id` | Remover um produto         |
 
 ### Pedidos (`/orders`)
 
-| Método | Rota              | Descrição                          |
-|--------|-------------------|------------------------------------|
-| GET    | `/orders`         | Lista todos os pedidos             |
-| GET    | `/orders/:id`     | Retorna um pedido e seus produtos  |
-| POST   | `/orders`         | Cria um novo pedido                |
-| DELETE | `/orders/:id`     | Remove um pedido e seus produtos   |
+| Método | Rotas          | Descrição                      |
+|--------|----------------|---------------------------------|
+| GET    | `/orders`      | Listar todos os pedidos                  |
+| GET    | `/orders/:id`  | Obter um pedido por ID    |
+| POST   | `/orders`      | Criar um novo pedido               |
+| DELETE | `/orders/:id`  | Remover um pedido  |
 
 ## Exemplos de uso
 
-### Criar cliente
+### Clientes
 
-```http
-POST /customers
-Content-Type: application/json
+**Obter todos os clientes**  
+- Método: `GET`  
+- URL: `http://localhost:3000/customers`
 
+**Obter um cliente por ID**  
+- Método: `GET`  
+- URL: `http://localhost:3000/customers/:id`
+
+**Crie um novo cliente**  
+- Método: `POST`  
+- URL: `http://localhost:3000/customers`  
+- Body (JSON):  
+```json
 {
-  "name": "João da Silva",
-  "email": "joao@email.com"
+  "name": "John Doe",
+  "email": "john@example.com"
 }
 ```
 
-### Criar produto
-
-```http
-POST /products
-Content-Type: application/json
-
+**Atualizar um cliente**  
+- Método: `PUT`  
+- URL: `http://localhost:3000/customers/:id`  
+- Body (JSON):  
+```json
 {
-  "name": "Pizza",
-  "price": 29.99,
-  "stock": 10
+  "name": "John Updated",
+  "email": "johnupdated@example.com"
 }
 ```
 
-### Criar pedido
+**Deletar um cliente**  
+- Método: `DELETE`  
+- URL: `http://localhost:3000/customers/:id`
 
-```http
-POST /orders
-Content-Type: application/json
+---
 
+### Produtos
+
+**Obter todos os produtos**  
+- Método: `GET`  
+- URL: `http://localhost:3000/products`
+
+**Obter um produto por ID**  
+- Método: `GET`  
+- URL: `http://localhost:3000/products/:id`
+
+**Crie um novo produto**  
+- Método: `POST`  
+- URL: `http://localhost:3000/products`  
+- Body (JSON):  
+```json
+{
+  "name": "Product Name",
+  "price": 99.99,
+  "stock": 100
+}
+```
+
+**Atualizar um produto**  
+- Método: `PUT`  
+- URL: `http://localhost:3000/products/:id`  
+- Body (JSON):  
+```json
+{
+  "price": 89.99,
+  "stock": 80
+}
+```
+
+**Excluir um produto**  
+- Método: `DELETE`  
+- URL: `http://localhost:3000/products/:id`
+
+---
+
+### Pedidos
+
+**Obter todos os pedidos**  
+- Método: `GET`  
+- URL: `http://localhost:3000/orders`
+
+**Obter um pedido por ID**  
+- Método: `GET`  
+- URL: `http://localhost:3000/orders/:id`
+
+**Criar um novo pedido**  
+- Método: `POST`  
+- URL: `http://localhost:3000/orders`  
+- Body (JSON):
+```json
 {
   "customerId": 1,
   "products": [
@@ -154,8 +235,10 @@ Content-Type: application/json
 }
 ```
 
+**Excluir um pedido**  
+- Método: `DELETE`  
+- URL: `http://localhost:3000/orders/:id`
 ---
-
-### Desenvolvido por João Vitor
+#### Developed with by João Vitor
 
 [LinkedIn](https://www.linkedin.com/in/jvssvj/) - [GitHub](https://github.com/jvssvj) - [Website](https://jvssvj.vercel.app/)
