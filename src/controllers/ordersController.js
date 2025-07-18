@@ -11,7 +11,7 @@ const ordersController = {
     create: async (req, res) => {
         const newOrder = await Order.create(
             req.body.customerId,
-            req.body.products // Array<{ id: number, quantity: number }>
+            req.body.products
         )
 
         if (newOrder instanceof Order) {

@@ -1,6 +1,6 @@
 const { query, getClient } = require("../database");
 const ValidationError = require("../errors/ValidationError");
-const Customers = require("./Custumers");
+const Customers = require("./Customers");
 const Product = require("./Product");
 
 class Order {
@@ -11,8 +11,6 @@ class Order {
         this.createdAt = new Date(orderRow.created_at);
         this.updatedAt = new Date(orderRow.updated_at);
 
-        // dessa vez nosso construtor incluirá a possibilidade de
-        // popular propriedades com dados das tabelas associadas
         this.customer = undefined;
         if (populateCustomer) {
             this.customer = populateCustomer;
@@ -23,7 +21,6 @@ class Order {
         }
     }
 
-    // no método findAll() incluiremos os dados do cliente no pedido
     static async findAll() {
         const result = await query(
             `SELECT
@@ -38,25 +35,12 @@ class Order {
         return result.rows.map(row => new Order(row));
     }
 
-    // no método create() veremos como usar uma transaction
-    /**
-   * 
-   * @param {number} customerId 
-   * @param {{ id: number, quantity: number }[]} orderProducts 
-   */
     static async create(customerId, orderProducts) {
-
-        //Buscar os dados dos produtos no banco
         const storedOrderProducts = await query(
             `SELECT * FROM products WHERE id = ANY($1::int[]);`,
             [orderProducts.map(product => product.id)]
         )
 
-
-
-        //Multiplica price * quantity para cada produto
-        //Soma tudo em totalOrder
-        //Cria um array com os produtos e suas quantidades
         let totalOrder = 0;
         const populatedOrderProducts = storedOrderProducts.rows.map((row) => {
             const { quantity } = orderProducts.find((product) => product.id === row.id)
@@ -65,20 +49,12 @@ class Order {
             return { product: new Product(row), quantity }
         })
 
-
-
-
-
-        //Garante que todas as queries sejam executadas como uma única operação atômica
-        //Se algo falhar, tudo é revertido(ROLLBACK)
         const dbClient = await getClient()
         let response;
 
         try {
             await dbClient.query("BEGIN")
 
-            //Cria o pedido com o ID do cliente e o total calculado
-            //Usa RETURNING * para pegar os dados do pedido recém-criado
             const orderCreationResult = await dbClient.query(
                 `INSERT INTO orders (customer_id, total) VALUES ($1, $2) RETURNING *;`,
                 [customerId, totalOrder]
@@ -86,7 +62,6 @@ class Order {
 
             const order = new Order(orderCreationResult.rows[0], null, populatedOrderProducts)
 
-            //Para cada produto, cria um registro que liga o pedido ao produto e registra a quantidade
             for (const entry of populatedOrderProducts) {
                 if (entry.product.stockQuantity < entry.quantity) {
                     throw new ValidationError(`The product ${entry.product.name} does not have sufficient stock`)
@@ -101,23 +76,18 @@ class Order {
                 await dbClient.query('UPDATE products SET stock_quantity = $1 WHERE id = $2;', [newStockQuantity, entry.product.id])
             }
 
-
-            //Salva tudo no banco de dados
             await dbClient.query("COMMIT")
             response = order
         } catch (error) {
-            // Desfaz tudo em caso de erro
             await dbClient.query("ROLLBACK")
             response = { message: `Error while creating order: ${error.message}` }
         } finally {
             dbClient.release()
         }
 
-
         return response
     }
 
-    // no método findById() incluiremos os dados do cliente e a lista dos produtos
     static async findById(id) {
         const orderResult = await query(
             `SELECT
@@ -171,6 +141,6 @@ class Order {
         }
         return result
     }
-};
+}
 
 module.exports = Order;

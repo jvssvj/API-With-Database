@@ -22,10 +22,10 @@ class Customers {
             email: Joi.string().email().required()
         })
 
-        const { error, value: validAttributes } = schema.validate(attributes, { abortEarly: false }) //A desestruturação extrai → error: continua com o nome error / value: é renomeado para validAttributes
+        const { error, value: validAttributes } = schema.validate(attributes, { abortEarly: false })
         if (error) {
             const messages = error.details.map(detail => detail.message).join(', ')
-            throw new ValidationError(`Invalid data: ${messages}`) //Essas mensagens vêm diretamente do Joi.
+            throw new ValidationError(`Invalid data: ${messages}`)
         }
 
         const result = await query(
@@ -61,13 +61,13 @@ class Customers {
             email: Joi.string().email()
         })
 
-        const { error, value: validAttributes } = schema.validate(atributes, { abortEarly: false }) //A desestruturação extrai → error: continua com o nome error / value: é renomeado para validAttributes
+        const { error, value: validAttributes } = schema.validate(atributes, { abortEarly: false })
         if (error) {
             const messages = error.details.map(detail => detail.message).join(', ')
-            throw new ValidationError(`Invalid data: ${messages}`) //Essas mensagens vêm diretamente do Joi.
+            throw new ValidationError(`Invalid data: ${messages}`)
         }
 
-        Object.assign(customers, validAttributes) //Object.assign(destino, origem) Ele copia todas as propriedades enumeráveis do objeto origem para o objeto destino. Se o destino já tiver uma propriedade com o mesmo nome, ela será sobrescrita.
+        Object.assign(customers, validAttributes)
         customers.updatedAt = new Date()
 
         await query(
@@ -77,12 +77,12 @@ class Customers {
     }
 
     static async delete(id) {
-        const { rows } = await query(`SELECT FROM customers WHERE id = $1`, [id]) //Encontra o Cliente
+        const { rows } = await query(`SELECT FROM customers WHERE id = $1`, [id])
 
-        if (!rows[0]) throw new NotFoundError('Customer not found.')//Se não encontrar retorna erro
+        if (!rows[0]) throw new NotFoundError('Customer not found.')
 
         await query(`DELETE FROM customers WHERE id = $1`, [id])
-        return rows[0] //Apenas para ter alguma coisa para ler
+        return rows[0]
     }
 }
 

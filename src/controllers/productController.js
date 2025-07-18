@@ -2,37 +2,54 @@ const Product = require("../models/Product")
 
 const productsController = {
     //GET /products
-    index: async (req, res) => {
-        const products = await Product.findAll()
-        res.json(products)
+    index: async (req, res, next) => {
+        try {
+            const products = await Product.findAll()
+            return res.json(products)
+        } catch (error) {
+            next(error)
+        }
     },
 
     //POST /products
-    save: async (req, res) => {
-        const newProduct = await Product.create(req.body)
-        res.status(201).json(newProduct)
+    save: async (req, res, next) => {
+        try {
+            const newProduct = await Product.create(req.body)
+            return res.status(201).json(newProduct)
+        } catch (error) {
+            next(error)
+        }
     },
 
     //GET /products/:id
-    show: async (req, res) => {
-        const product = await Product.findById(req.params.id)
-        if (product === null) return res.status(404).json({ message: "Product not found." })
-
-        res.json(product)
+    show: async (req, res, next) => {
+        try {
+            const product = await Product.findById(req.params.id)
+            return res.json(product)
+        } catch (error) {
+            next(error)
+        }
     },
 
     // PUT /products/:id
-    update: async (req, res) => {
-        const updatedProduct = await Product.update(req.params.id, req.body)
-        if (updatedProduct === null) return res.status(404).json({ message: "Product not found." })
+    update: async (req, res, next) => {
 
-        res.json(updatedProduct)
+        try {
+            const updatedProduct = await Product.update(req.params.id, req.body)
+            return res.json(updatedProduct)
+        } catch (error) {
+            next()
+        }
     },
 
     // DELETE /products/:id
-    delete: async (req, res) => {
-        const result = await Product.delete(req.params.id)
-        res.json(result)
+    delete: async (req, res, next) => {
+        try {
+            const result = await Product.delete(req.params.id)
+            return res.json(result)
+        } catch (error) {
+            next(error)
+        }
     },
 }
 

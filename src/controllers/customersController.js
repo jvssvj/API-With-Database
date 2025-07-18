@@ -1,4 +1,4 @@
-const Customers = require("../models/Custumers")
+const Customers = require("../models/Customers")
 
 const customersController = {
     // GET /customers
