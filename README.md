@@ -1,3 +1,4 @@
+[Leia em português](./README-PTBR.md)
 
 # API-With-Database
 
