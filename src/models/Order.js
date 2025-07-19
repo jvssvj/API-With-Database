@@ -1,4 +1,5 @@
 const { query, getClient } = require("../database");
+const NotFoundError = require("../errors/NotFoundError");
 const ValidationError = require("../errors/ValidationError");
 const Customers = require("./Customers");
 const Product = require("./Product");
@@ -22,16 +23,25 @@ class Order {
     }
 
     static async findAll() {
-        const result = await query(
-            `SELECT
-        orders.*,
-        customers.id AS "customer.id",
-        customers.name AS "customer.name",
-        customers.email AS "customer.email",
-        customers.created_at AS "customer.created_at",
-        customers.updated_at AS "customer.updated_at"
-      FROM orders JOIN customers ON customers.id = orders.customer_id;`
-        );
+        const result = await query(`
+            SELECT
+                orders.id AS "order.id",
+                orders.total AS "order.total",
+                orders.status AS "order.status",
+                orders.created_at AS "order.created_at",
+                orders.updated_at AS "order.updated_at",
+                customers.id AS "customer.id",
+                customers.name AS "customer.name",
+                customers.email AS "customer.email",
+                customers.created_at AS "customer.created_at",
+                customers.updated_at AS "customer.updated_at"
+            FROM orders
+            JOIN customers ON customers.id = orders.customer_id
+            ORDER BY orders.created_at DESC;
+        `);
+
+        if (result.rows.length === 0) throw new NotFoundError('Orders not found.')
+
         return result.rows.map(row => new Order(row));
     }
 
@@ -102,6 +112,8 @@ class Order {
             [id]
         )
 
+        if (orderResult.rows.length === 0) throw new NotFoundError(`Order with ID ${id} not found`)
+
         const orderProductsResult = await query(
             `SELECT order_products.*, products.*
       FROM order_products JOIN products ON order_products.product_id = products.id
@@ -109,7 +121,7 @@ class Order {
             [id]
         )
 
-
+        if (orderProductsResult.rows.length === 0) throw new NotFoundError(`No products found for order with ID ${id}.`)
 
         const orderData = orderResult.rows[0]
         const customer = new Customers({
@@ -119,9 +131,10 @@ class Order {
             created_at: orderData["customer.created_at"],
             updated_at: orderData["customer.updated_at"]
         })
-        const orderReset = new Product(orderProductsResult.rows[0])
 
-        return new Order(orderData, customer, orderReset)
+        const products = orderProductsResult.rows.map(row => new Product(row))
+
+        return new Order(orderData, customer, products)
     }
 
     static async delete(id) {

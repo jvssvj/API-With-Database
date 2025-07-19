@@ -9,28 +9,32 @@ const ordersController = {
 
     // POST /orders
     create: async (req, res) => {
-        const newOrder = await Order.create(
-            req.body.customerId,
-            req.body.products
-        )
-
-        if (newOrder instanceof Order) {
-            res.status(201).json(newOrder)
-        } else {
-            res.status(400).json(newOrder)
+        try {
+            const newOrder = await Order.create(req.body.customerId, req.body.products)
+            return res.status(201).json(newOrder)
+        } catch (error) {
+            next()
         }
     },
 
     // GET /orders/:id
     show: async (req, res) => {
-        const order = await Order.findById(req.params.id)
-        res.json(order)
+        try {
+            const order = await Order.findById(req.params.id)
+            return res.json(order)
+        } catch (error) {
+            next()
+        }
     },
 
     // DELETE /orders/:id
     delete: async (req, res) => {
-        const result = await Order.delete(req.params.id)
-        res.json(result)
+        try {
+            const result = await Order.delete(req.params.id)
+            return res.json(result)
+        } catch (error) {
+            next()
+        }
     }
 }
 

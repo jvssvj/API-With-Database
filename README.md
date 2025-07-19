@@ -96,7 +96,7 @@ Start the server
 
 ## Endpoints
 
-His document lists the main API endpoints for managing customers, products, and orders.
+Lists the API endpoints for managing customers, products, and orders.
 
 ### Customers (`/customers`)
 

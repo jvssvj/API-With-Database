@@ -6,12 +6,12 @@ Uma API RESTful para gerenciamento de clientes, produtos e pedidos, desenvolvida
 
 ## Funcionalidades
 
-- CRUD de Cliente e Produto
+- CRUD de clientes e produtos
 - Criação de pedidos com múltiplos produtos
 - Cálculo automático do total do pedido
-- Atualização de estoque após a conclusão do pedido
+- Atualização de estoque ao finalizar pedidos
 - Validação de dados e tratamento de erros
-- Transações seguras com reversão em caso de falha
+- Transações seguras com rollback em caso de falha
 
 ## Tecnologias utilizadas
 
@@ -55,7 +55,6 @@ API-WITH-DATABASE/
 └── README.md
 ```
 ## Executando localmente
-
 
 Clonar o projeto
 
@@ -107,30 +106,30 @@ Lista os endpoints da API para gerenciamento de clientes, produtos e pedidos.
 
 | Método | Rotas             | Descrição               |
 |--------|-------------------|---------------------------|
-| GET    | `/customers`      | Listar todos os clientes         |
-| GET    | `/customers/:id`  | Obter um cliente por ID       |
-| POST   | `/customers`      | Criar um cliente     |
-| PUT    | `/customers/:id`  | Atualizar um cliente |
-| DELETE | `/customers/:id`  | Remover um cliente          |
+| GET    | `/customers`      | Lista todos os clientes   |
+| GET    | `/customers/:id`  | Retorna um cliente pelo ID|
+| POST   | `/customers`      | Cria um novo cliente      |
+| PUT    | `/customers/:id`  | Atualiza um cliente       |
+| DELETE | `/customers/:id`  | Remove um cliente         |
 
 ### Produtos (`/products`)
 
-| Método | Rotas           | Descrição              |
-|--------|-----------------|--------------------------|
-| GET    | `/products`     | Listar todos os produtos        |
-| GET    | `/products/:id` | Obter um produto por ID      |
-| POST   | `/products`     | Criar um novo produto     |
-| PUT    | `/products/:id` | Atualizar um produto |
-| DELETE | `/products/:id` | Remover um produto         |
+| Método | Rotas              | Descrição                 |
+|--------|-------------------|---------------------------|
+| GET    | `/products`       | Lista todos os produtos   |
+| GET    | `/products/:id`   | Retorna um produto pelo ID|
+| POST   | `/products`       | Cria um novo produto      |
+| PUT    | `/products/:id`   | Atualiza um produto       |
+| DELETE | `/products/:id`   | Remove um produto         |
 
-### Pedidos (`/orders`)
+### Ordens (`/orders`)
 
-| Método | Rotas          | Descrição                      |
-|--------|----------------|---------------------------------|
-| GET    | `/orders`      | Listar todos os pedidos                  |
-| GET    | `/orders/:id`  | Obter um pedido por ID    |
-| POST   | `/orders`      | Criar um novo pedido               |
-| DELETE | `/orders/:id`  | Remover um pedido  |
+| Método | Rotas              | Descrição                          |
+|--------|-------------------|------------------------------------|
+| GET    | `/orders`         | Lista todos os pedidos             |
+| GET    | `/orders/:id`     | Retorna um pedido e seus produtos  |
+| POST   | `/orders`         | Cria um novo pedido                |
+| DELETE | `/orders/:id`     | Remove um pedido e seus produtos   |
 
 ## Exemplos de uso
 
@@ -194,38 +193,12 @@ Lista os endpoints da API para gerenciamento de clientes, produtos e pedidos.
 }
 ```
 
-**Atualizar um produto**  
-- Método: `PUT`  
-- URL: `http://localhost:3000/products/:id`  
-- Body (JSON):  
-```json
-{
-  "price": 89.99,
-  "stock": 80
-}
-```
+### Criar pedido
 
-**Excluir um produto**  
-- Método: `DELETE`  
-- URL: `http://localhost:3000/products/:id`
+```http
+POST /orders
+Content-Type: application/json
 
----
-
-### Pedidos
-
-**Obter todos os pedidos**  
-- Método: `GET`  
-- URL: `http://localhost:3000/orders`
-
-**Obter um pedido por ID**  
-- Método: `GET`  
-- URL: `http://localhost:3000/orders/:id`
-
-**Criar um novo pedido**  
-- Método: `POST`  
-- URL: `http://localhost:3000/orders`  
-- Body (JSON):
-```json
 {
   "customerId": 1,
   "products": [
